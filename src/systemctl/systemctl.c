@@ -7335,6 +7335,7 @@ static int halt_now(enum action a) {
                 reboot(RB_POWER_OFF);
                 return -errno;
 
+        case ACTION_KEXEC:
         case ACTION_REBOOT: {
                 _cleanup_free_ char *param = NULL;
 
