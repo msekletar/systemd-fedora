@@ -2058,8 +2058,12 @@ int main(int argc, char *argv[]) {
                 return EXIT_FAILURE;
         }
         if (r == 0) {
-                printf("-- No entries --\n");
-                goto finish;
+                if (arg_follow)
+                        need_seek = true;
+                else {
+                        printf("-- No entries --\n");
+                        goto finish;
+                }
         }
 
         if (!arg_follow)
