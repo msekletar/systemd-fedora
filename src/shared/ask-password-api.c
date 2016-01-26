@@ -39,6 +39,7 @@
 #include "terminal-util.h"
 #include "signal-util.h"
 #include "ask-password-api.h"
+#include "utf8.h"
 
 static void backspace_chars(int ttyfd, size_t p) {
 
@@ -60,8 +61,8 @@ int ask_password_tty(
                 char **_passphrase) {
 
         struct termios old_termios, new_termios;
-        char passphrase[LINE_MAX], *x;
-        size_t p = 0;
+        char passphrase[LINE_MAX + 1] = {}, *x;
+        size_t p = 0, codepoint = 0;
         int r;
         _cleanup_close_ int ttyfd = -1, notify = -1;
         struct pollfd pollfd[2];
@@ -221,8 +222,13 @@ int ask_password_tty(
 
                         passphrase[p++] = c;
 
-                        if (!silent_mode && ttyfd >= 0)
-                                loop_write(ttyfd, echo ? &c : "*", 1, false);
+                        if (!silent_mode && ttyfd >= 0) {
+                                n = utf8_encoded_valid_unichar(passphrase + codepoint);
+                                if (n >= 0) {
+                                        codepoint = p;
+                                        loop_write(ttyfd, echo ? &c : "*", 1, false);
+                                }
+                        }
 
                         dirty = true;
                 }
