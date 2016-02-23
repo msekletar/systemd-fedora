@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -39,7 +37,7 @@ void dns_zone_item_probe_stop(DnsZoneItem *i) {
         t = i->probe_transaction;
         i->probe_transaction = NULL;
 
-        set_remove(t->zone_items, i);
+        set_remove(t->notify_zone_items, i);
         dns_transaction_gc(t);
 }
 
@@ -163,7 +161,6 @@ static int dns_zone_link_item(DnsZone *z, DnsZoneItem *i) {
 }
 
 static int dns_zone_item_probe_start(DnsZoneItem *i)  {
-        _cleanup_(dns_resource_key_unrefp) DnsResourceKey *key = NULL;
         DnsTransaction *t;
         int r;
 
@@ -172,22 +169,24 @@ static int dns_zone_item_probe_start(DnsZoneItem *i)  {
         if (i->probe_transaction)
                 return 0;
 
-        key = dns_resource_key_new(i->rr->key->class, DNS_TYPE_ANY, DNS_RESOURCE_KEY_NAME(i->rr->key));
-        if (!key)
-                return -ENOMEM;
-
-        t = dns_scope_find_transaction(i->scope, key, false);
+        t = dns_scope_find_transaction(i->scope, &DNS_RESOURCE_KEY_CONST(i->rr->key->class, DNS_TYPE_ANY, DNS_RESOURCE_KEY_NAME(i->rr->key)), false);
         if (!t) {
+                _cleanup_(dns_resource_key_unrefp) DnsResourceKey *key = NULL;
+
+                key = dns_resource_key_new(i->rr->key->class, DNS_TYPE_ANY, DNS_RESOURCE_KEY_NAME(i->rr->key));
+                if (!key)
+                        return -ENOMEM;
+
                 r = dns_transaction_new(&t, i->scope, key);
                 if (r < 0)
                         return r;
         }
 
-        r = set_ensure_allocated(&t->zone_items, NULL);
+        r = set_ensure_allocated(&t->notify_zone_items, NULL);
         if (r < 0)
                 goto gc;
 
-        r = set_put(t->zone_items, i);
+        r = set_put(t->notify_zone_items, i);
         if (r < 0)
                 goto gc;
 
@@ -205,7 +204,7 @@ static int dns_zone_item_probe_start(DnsZoneItem *i)  {
                 }
         }
 
-        dns_zone_item_ready(i);
+        dns_zone_item_notify(i);
         return 0;
 
 gc:
@@ -222,9 +221,9 @@ int dns_zone_put(DnsZone *z, DnsScope *s, DnsResourceRecord *rr, bool probe) {
         assert(s);
         assert(rr);
 
-        if (rr->key->class == DNS_CLASS_ANY)
+        if (dns_class_is_pseudo(rr->key->class))
                 return -EINVAL;
-        if (rr->key->type == DNS_TYPE_ANY)
+        if (dns_type_is_pseudo(rr->key->type))
                 return -EINVAL;
 
         existing = dns_zone_get(z, rr);
@@ -311,7 +310,7 @@ int dns_zone_lookup(DnsZone *z, DnsResourceKey *key, DnsAnswer **ret_answer, Dns
 
                         found = true;
 
-                        k = dns_resource_key_match_rr(key, j->rr);
+                        k = dns_resource_key_match_rr(key, j->rr, NULL);
                         if (k < 0)
                                 return k;
                         if (k > 0) {
@@ -381,11 +380,11 @@ int dns_zone_lookup(DnsZone *z, DnsResourceKey *key, DnsAnswer **ret_answer, Dns
                         if (j->state != DNS_ZONE_ITEM_PROBING)
                                 tentative = false;
 
-                        k = dns_resource_key_match_rr(key, j->rr);
+                        k = dns_resource_key_match_rr(key, j->rr, NULL);
                         if (k < 0)
                                 return k;
                         if (k > 0) {
-                                r = dns_answer_add(answer, j->rr, 0);
+                                r = dns_answer_add(answer, j->rr, 0, DNS_ANSWER_AUTHENTICATED);
                                 if (r < 0)
                                         return r;
 
@@ -411,7 +410,7 @@ int dns_zone_lookup(DnsZone *z, DnsResourceKey *key, DnsAnswer **ret_answer, Dns
                         if (j->state != DNS_ZONE_ITEM_PROBING)
                                 tentative = false;
 
-                        r = dns_answer_add(answer, j->rr, 0);
+                        r = dns_answer_add(answer, j->rr, 0, DNS_ANSWER_AUTHENTICATED);
                         if (r < 0)
                                 return r;
                 }
@@ -470,15 +469,12 @@ return_empty:
 }
 
 void dns_zone_item_conflict(DnsZoneItem *i) {
-        _cleanup_free_ char *pretty = NULL;
-
         assert(i);
 
         if (!IN_SET(i->state, DNS_ZONE_ITEM_PROBING, DNS_ZONE_ITEM_VERIFYING, DNS_ZONE_ITEM_ESTABLISHED))
                 return;
 
-        dns_resource_record_to_string(i->rr, &pretty);
-        log_info("Detected conflict on %s", strna(pretty));
+        log_info("Detected conflict on %s", strna(dns_resource_record_to_string(i->rr)));
 
         dns_zone_item_probe_stop(i);
 
@@ -490,16 +486,14 @@ void dns_zone_item_conflict(DnsZoneItem *i) {
                 manager_next_hostname(i->scope->manager);
 }
 
-void dns_zone_item_ready(DnsZoneItem *i) {
-        _cleanup_free_ char *pretty = NULL;
-
+void dns_zone_item_notify(DnsZoneItem *i) {
         assert(i);
         assert(i->probe_transaction);
 
         if (i->block_ready > 0)
                 return;
 
-        if (IN_SET(i->probe_transaction->state, DNS_TRANSACTION_NULL, DNS_TRANSACTION_PENDING))
+        if (IN_SET(i->probe_transaction->state, DNS_TRANSACTION_NULL, DNS_TRANSACTION_PENDING, DNS_TRANSACTION_VALIDATING))
                 return;
 
         if (i->probe_transaction->state == DNS_TRANSACTION_SUCCESS) {
@@ -529,15 +523,13 @@ void dns_zone_item_ready(DnsZoneItem *i) {
                 log_debug("Got a successful probe reply, but peer has lexicographically lower IP address and thus lost.");
         }
 
-        dns_resource_record_to_string(i->rr, &pretty);
-        log_debug("Record %s successfully probed.", strna(pretty));
+        log_debug("Record %s successfully probed.", strna(dns_resource_record_to_string(i->rr)));
 
         dns_zone_item_probe_stop(i);
         i->state = DNS_ZONE_ITEM_ESTABLISHED;
 }
 
 static int dns_zone_item_verify(DnsZoneItem *i) {
-        _cleanup_free_ char *pretty = NULL;
         int r;
 
         assert(i);
@@ -545,8 +537,7 @@ static int dns_zone_item_verify(DnsZoneItem *i) {
         if (i->state != DNS_ZONE_ITEM_ESTABLISHED)
                 return 0;
 
-        dns_resource_record_to_string(i->rr, &pretty);
-        log_debug("Verifying RR %s", strna(pretty));
+        log_debug("Verifying RR %s", strna(dns_resource_record_to_string(i->rr)));
 
         i->state = DNS_ZONE_ITEM_VERIFYING;
         r = dns_zone_item_probe_start(i);
@@ -631,7 +622,6 @@ void dns_zone_verify_all(DnsZone *zone) {
 void dns_zone_dump(DnsZone *zone, FILE *f) {
         Iterator iterator;
         DnsZoneItem *i;
-        int r;
 
         if (!zone)
                 return;
@@ -643,10 +633,10 @@ void dns_zone_dump(DnsZone *zone, FILE *f) {
                 DnsZoneItem *j;
 
                 LIST_FOREACH(by_key, j, i) {
-                        _cleanup_free_ char *t = NULL;
+                        const char *t;
 
-                        r = dns_resource_record_to_string(j->rr, &t);
-                        if (r < 0) {
+                        t = dns_resource_record_to_string(j->rr);
+                        if (!t) {
                                 log_oom();
                                 continue;
                         }

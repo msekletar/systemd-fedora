@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -26,6 +24,7 @@
 
 #include <stdbool.h>
 
+#include "time-util.h"
 #include "util.h"
 
 typedef struct CalendarComponent {

@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #ifndef foosdloginhfoo
 #define foosdloginhfoo
 
@@ -239,6 +237,8 @@ int sd_login_monitor_get_events(sd_login_monitor *m);
 
 /* Get timeout for poll(), as usec value relative to CLOCK_MONOTONIC's epoch */
 int sd_login_monitor_get_timeout(sd_login_monitor *m, uint64_t *timeout_usec);
+
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_login_monitor, sd_login_monitor_unref);
 
 _SD_END_DECLARATIONS;
 

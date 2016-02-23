@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -28,7 +26,7 @@
 #include "test-helper.h"
 
 int main(int argc, char *argv[]) {
-        _cleanup_bus_error_free_ sd_bus_error err = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error err = SD_BUS_ERROR_NULL;
         Manager *m = NULL;
         Unit *a = NULL, *b = NULL, *c = NULL, *d = NULL, *e = NULL, *g = NULL, *h = NULL;
         FILE *serial = NULL;

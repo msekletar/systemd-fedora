@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -307,10 +305,6 @@ struct Manager {
         const char *unit_log_format_string;
 
         int first_boot;
-
-        /* Used for NetClass=auto units */
-        Hashmap *cgroup_netclass_registry;
-        uint32_t cgroup_netclass_registry_last;
 };
 
 int manager_new(ManagerRunningAs running_as, bool test_run, Manager **m);

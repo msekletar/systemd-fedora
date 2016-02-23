@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #ifndef foosdeventhfoo
 #define foosdeventhfoo
 
@@ -130,6 +128,10 @@ int sd_event_source_set_time_accuracy(sd_event_source *s, uint64_t usec);
 int sd_event_source_get_time_clock(sd_event_source *s, clockid_t *clock);
 int sd_event_source_get_signal(sd_event_source *s);
 int sd_event_source_get_child_pid(sd_event_source *s, pid_t *pid);
+
+/* Define helpers so that __attribute__((cleanup(sd_event_unrefp))) and similar may be used. */
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_event, sd_event_unref);
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_event_source, sd_event_source_unref);
 
 _SD_END_DECLARATIONS;
 

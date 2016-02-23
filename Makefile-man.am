@@ -25,6 +25,7 @@ MANPAGES += \
 	man/machine-info.5 \
 	man/os-release.5 \
 	man/sd-bus-errors.3 \
+	man/sd-bus.3 \
 	man/sd-daemon.3 \
 	man/sd-event.3 \
 	man/sd-id128.3 \
@@ -71,6 +72,7 @@ MANPAGES += \
 	man/sd_id128_to_string.3 \
 	man/sd_is_fifo.3 \
 	man/sd_journal_add_match.3 \
+	man/sd_journal_enumerate_fields.3 \
 	man/sd_journal_get_catalog.3 \
 	man/sd_journal_get_cursor.3 \
 	man/sd_journal_get_cutoff_realtime_usec.3 \
@@ -78,6 +80,7 @@ MANPAGES += \
 	man/sd_journal_get_fd.3 \
 	man/sd_journal_get_realtime_usec.3 \
 	man/sd_journal_get_usage.3 \
+	man/sd_journal_has_runtime_files.3 \
 	man/sd_journal_next.3 \
 	man/sd_journal_open.3 \
 	man/sd_journal_print.3 \
@@ -120,6 +123,7 @@ MANPAGES += \
 	man/systemd-nspawn.1 \
 	man/systemd-path.1 \
 	man/systemd-remount-fs.service.8 \
+	man/systemd-resolve.1 \
 	man/systemd-run.1 \
 	man/systemd-sleep.conf.5 \
 	man/systemd-socket-proxyd.8 \
@@ -234,6 +238,7 @@ MANPAGES_ALIAS += \
 	man/SD_JOURNAL_FOREACH.3 \
 	man/SD_JOURNAL_FOREACH_BACKWARDS.3 \
 	man/SD_JOURNAL_FOREACH_DATA.3 \
+	man/SD_JOURNAL_FOREACH_FIELD.3 \
 	man/SD_JOURNAL_FOREACH_UNIQUE.3 \
 	man/SD_JOURNAL_INVALIDATE.3 \
 	man/SD_JOURNAL_LOCAL_ONLY.3 \
@@ -285,6 +290,7 @@ MANPAGES_ALIAS += \
 	man/sd_bus_creds_has_permitted_cap.3 \
 	man/sd_bus_creds_ref.3 \
 	man/sd_bus_creds_unref.3 \
+	man/sd_bus_creds_unrefp.3 \
 	man/sd_bus_default_system.3 \
 	man/sd_bus_default_user.3 \
 	man/sd_bus_error_copy.3 \
@@ -320,6 +326,7 @@ MANPAGES_ALIAS += \
 	man/sd_bus_ref.3 \
 	man/sd_bus_release_name.3 \
 	man/sd_bus_unref.3 \
+	man/sd_bus_unrefp.3 \
 	man/sd_event.3 \
 	man/sd_event_add_exit.3 \
 	man/sd_event_add_post.3 \
@@ -354,8 +361,10 @@ MANPAGES_ALIAS += \
 	man/sd_event_source_set_io_fd.3 \
 	man/sd_event_source_set_time.3 \
 	man/sd_event_source_set_time_accuracy.3 \
+	man/sd_event_source_unrefp.3 \
 	man/sd_event_time_handler_t.3 \
 	man/sd_event_unref.3 \
+	man/sd_event_unrefp.3 \
 	man/sd_id128_equal.3 \
 	man/sd_id128_from_string.3 \
 	man/sd_id128_get_boot.3 \
@@ -378,6 +387,7 @@ MANPAGES_ALIAS += \
 	man/sd_journal_get_events.3 \
 	man/sd_journal_get_monotonic_usec.3 \
 	man/sd_journal_get_timeout.3 \
+	man/sd_journal_has_persistent_files.3 \
 	man/sd_journal_next_skip.3 \
 	man/sd_journal_open_container.3 \
 	man/sd_journal_open_directory.3 \
@@ -389,6 +399,7 @@ MANPAGES_ALIAS += \
 	man/sd_journal_process.3 \
 	man/sd_journal_reliable_fd.3 \
 	man/sd_journal_restart_data.3 \
+	man/sd_journal_restart_fields.3 \
 	man/sd_journal_restart_unique.3 \
 	man/sd_journal_seek_cursor.3 \
 	man/sd_journal_seek_monotonic_usec.3 \
@@ -557,6 +568,7 @@ man/SD_JOURNAL_CURRENT_USER.3: man/sd_journal_open.3
 man/SD_JOURNAL_FOREACH.3: man/sd_journal_next.3
 man/SD_JOURNAL_FOREACH_BACKWARDS.3: man/sd_journal_next.3
 man/SD_JOURNAL_FOREACH_DATA.3: man/sd_journal_get_data.3
+man/SD_JOURNAL_FOREACH_FIELD.3: man/sd_journal_enumerate_fields.3
 man/SD_JOURNAL_FOREACH_UNIQUE.3: man/sd_journal_query_unique.3
 man/SD_JOURNAL_INVALIDATE.3: man/sd_journal_get_fd.3
 man/SD_JOURNAL_LOCAL_ONLY.3: man/sd_journal_open.3
@@ -608,6 +620,7 @@ man/sd_bus_creds_has_inheritable_cap.3: man/sd_bus_creds_get_pid.3
 man/sd_bus_creds_has_permitted_cap.3: man/sd_bus_creds_get_pid.3
 man/sd_bus_creds_ref.3: man/sd_bus_creds_new_from_pid.3
 man/sd_bus_creds_unref.3: man/sd_bus_creds_new_from_pid.3
+man/sd_bus_creds_unrefp.3: man/sd_bus_creds_new_from_pid.3
 man/sd_bus_default_system.3: man/sd_bus_default.3
 man/sd_bus_default_user.3: man/sd_bus_default.3
 man/sd_bus_error_copy.3: man/sd_bus_error.3
@@ -643,6 +656,7 @@ man/sd_bus_path_encode_many.3: man/sd_bus_path_encode.3
 man/sd_bus_ref.3: man/sd_bus_new.3
 man/sd_bus_release_name.3: man/sd_bus_request_name.3
 man/sd_bus_unref.3: man/sd_bus_new.3
+man/sd_bus_unrefp.3: man/sd_bus_new.3
 man/sd_event.3: man/sd_event_new.3
 man/sd_event_add_exit.3: man/sd_event_add_defer.3
 man/sd_event_add_post.3: man/sd_event_add_defer.3
@@ -677,8 +691,10 @@ man/sd_event_source_set_io_events.3: man/sd_event_add_io.3
 man/sd_event_source_set_io_fd.3: man/sd_event_add_io.3
 man/sd_event_source_set_time.3: man/sd_event_add_time.3
 man/sd_event_source_set_time_accuracy.3: man/sd_event_add_time.3
+man/sd_event_source_unrefp.3: man/sd_event_source_unref.3
 man/sd_event_time_handler_t.3: man/sd_event_add_time.3
 man/sd_event_unref.3: man/sd_event_new.3
+man/sd_event_unrefp.3: man/sd_event_new.3
 man/sd_id128_equal.3: man/sd-id128.3
 man/sd_id128_from_string.3: man/sd_id128_to_string.3
 man/sd_id128_get_boot.3: man/sd_id128_get_machine.3
@@ -701,6 +717,7 @@ man/sd_journal_get_data_threshold.3: man/sd_journal_get_data.3
 man/sd_journal_get_events.3: man/sd_journal_get_fd.3
 man/sd_journal_get_monotonic_usec.3: man/sd_journal_get_realtime_usec.3
 man/sd_journal_get_timeout.3: man/sd_journal_get_fd.3
+man/sd_journal_has_persistent_files.3: man/sd_journal_has_runtime_files.3
 man/sd_journal_next_skip.3: man/sd_journal_next.3
 man/sd_journal_open_container.3: man/sd_journal_open.3
 man/sd_journal_open_directory.3: man/sd_journal_open.3
@@ -712,6 +729,7 @@ man/sd_journal_printv.3: man/sd_journal_print.3
 man/sd_journal_process.3: man/sd_journal_get_fd.3
 man/sd_journal_reliable_fd.3: man/sd_journal_get_fd.3
 man/sd_journal_restart_data.3: man/sd_journal_get_data.3
+man/sd_journal_restart_fields.3: man/sd_journal_enumerate_fields.3
 man/sd_journal_restart_unique.3: man/sd_journal_query_unique.3
 man/sd_journal_seek_cursor.3: man/sd_journal_seek_head.3
 man/sd_journal_seek_monotonic_usec.3: man/sd_journal_seek_head.3
@@ -1004,6 +1022,9 @@ man/SD_JOURNAL_FOREACH_BACKWARDS.html: man/sd_journal_next.html
 man/SD_JOURNAL_FOREACH_DATA.html: man/sd_journal_get_data.html
 	$(html-alias)
 
+man/SD_JOURNAL_FOREACH_FIELD.html: man/sd_journal_enumerate_fields.html
+	$(html-alias)
+
 man/SD_JOURNAL_FOREACH_UNIQUE.html: man/sd_journal_query_unique.html
 	$(html-alias)
 
@@ -1157,6 +1178,9 @@ man/sd_bus_creds_ref.html: man/sd_bus_creds_new_from_pid.html
 man/sd_bus_creds_unref.html: man/sd_bus_creds_new_from_pid.html
 	$(html-alias)
 
+man/sd_bus_creds_unrefp.html: man/sd_bus_creds_new_from_pid.html
+	$(html-alias)
+
 man/sd_bus_default_system.html: man/sd_bus_default.html
 	$(html-alias)
 
@@ -1262,6 +1286,9 @@ man/sd_bus_release_name.html: man/sd_bus_request_name.html
 man/sd_bus_unref.html: man/sd_bus_new.html
 	$(html-alias)
 
+man/sd_bus_unrefp.html: man/sd_bus_new.html
+	$(html-alias)
+
 man/sd_event.html: man/sd_event_new.html
 	$(html-alias)
 
@@ -1364,10 +1391,16 @@ man/sd_event_source_set_time.html: man/sd_event_add_time.html
 man/sd_event_source_set_time_accuracy.html: man/sd_event_add_time.html
 	$(html-alias)
 
+man/sd_event_source_unrefp.html: man/sd_event_source_unref.html
+	$(html-alias)
+
 man/sd_event_time_handler_t.html: man/sd_event_add_time.html
 	$(html-alias)
 
 man/sd_event_unref.html: man/sd_event_new.html
+	$(html-alias)
+
+man/sd_event_unrefp.html: man/sd_event_new.html
 	$(html-alias)
 
 man/sd_id128_equal.html: man/sd-id128.html
@@ -1436,6 +1469,9 @@ man/sd_journal_get_monotonic_usec.html: man/sd_journal_get_realtime_usec.html
 man/sd_journal_get_timeout.html: man/sd_journal_get_fd.html
 	$(html-alias)
 
+man/sd_journal_has_persistent_files.html: man/sd_journal_has_runtime_files.html
+	$(html-alias)
+
 man/sd_journal_next_skip.html: man/sd_journal_next.html
 	$(html-alias)
 
@@ -1467,6 +1503,9 @@ man/sd_journal_reliable_fd.html: man/sd_journal_get_fd.html
 	$(html-alias)
 
 man/sd_journal_restart_data.html: man/sd_journal_get_data.html
+	$(html-alias)
+
+man/sd_journal_restart_fields.html: man/sd_journal_enumerate_fields.html
 	$(html-alias)
 
 man/sd_journal_restart_unique.html: man/sd_journal_query_unique.html
@@ -1970,16 +2009,21 @@ endif
 
 if ENABLE_RESOLVED
 MANPAGES += \
+	man/dnssec-trust-anchors.d.5 \
 	man/nss-resolve.8 \
 	man/resolved.conf.5 \
 	man/systemd-resolved.service.8
 MANPAGES_ALIAS += \
 	man/libnss_resolve.so.2.8 \
 	man/resolved.conf.d.5 \
-	man/systemd-resolved.8
+	man/systemd-resolved.8 \
+	man/systemd.negative.5 \
+	man/systemd.positive.5
 man/libnss_resolve.so.2.8: man/nss-resolve.8
 man/resolved.conf.d.5: man/resolved.conf.5
 man/systemd-resolved.8: man/systemd-resolved.service.8
+man/systemd.negative.5: man/dnssec-trust-anchors.d.5
+man/systemd.positive.5: man/dnssec-trust-anchors.d.5
 man/libnss_resolve.so.2.html: man/nss-resolve.html
 	$(html-alias)
 
@@ -1987,6 +2031,12 @@ man/resolved.conf.d.html: man/resolved.conf.html
 	$(html-alias)
 
 man/systemd-resolved.html: man/systemd-resolved.service.html
+	$(html-alias)
+
+man/systemd.negative.html: man/dnssec-trust-anchors.d.html
+	$(html-alias)
+
+man/systemd.positive.html: man/dnssec-trust-anchors.d.html
 	$(html-alias)
 
 endif
@@ -2138,6 +2188,7 @@ MANPAGES_ALIAS += \
 	man/sd_login_monitor_get_fd.3 \
 	man/sd_login_monitor_get_timeout.3 \
 	man/sd_login_monitor_unref.3 \
+	man/sd_login_monitor_unrefp.3 \
 	man/sd_peer_get_cgroup.3 \
 	man/sd_peer_get_machine_name.3 \
 	man/sd_peer_get_owner_uid.3 \
@@ -2184,6 +2235,7 @@ man/sd_login_monitor_get_events.3: man/sd_login_monitor_new.3
 man/sd_login_monitor_get_fd.3: man/sd_login_monitor_new.3
 man/sd_login_monitor_get_timeout.3: man/sd_login_monitor_new.3
 man/sd_login_monitor_unref.3: man/sd_login_monitor_new.3
+man/sd_login_monitor_unrefp.3: man/sd_login_monitor_new.3
 man/sd_peer_get_cgroup.3: man/sd_pid_get_session.3
 man/sd_peer_get_machine_name.3: man/sd_pid_get_session.3
 man/sd_peer_get_owner_uid.3: man/sd_pid_get_session.3
@@ -2246,6 +2298,9 @@ man/sd_login_monitor_get_timeout.html: man/sd_login_monitor_new.html
 	$(html-alias)
 
 man/sd_login_monitor_unref.html: man/sd_login_monitor_new.html
+	$(html-alias)
+
+man/sd_login_monitor_unrefp.html: man/sd_login_monitor_new.html
 	$(html-alias)
 
 man/sd_peer_get_cgroup.html: man/sd_pid_get_session.html
@@ -2409,6 +2464,7 @@ EXTRA_DIST += \
 	man/coredumpctl.xml \
 	man/crypttab.xml \
 	man/daemon.xml \
+	man/dnssec-trust-anchors.d.xml \
 	man/file-hierarchy.xml \
 	man/halt.xml \
 	man/hostname.xml \
@@ -2440,6 +2496,7 @@ EXTRA_DIST += \
 	man/resolved.conf.xml \
 	man/runlevel.xml \
 	man/sd-bus-errors.xml \
+	man/sd-bus.xml \
 	man/sd-daemon.xml \
 	man/sd-event.xml \
 	man/sd-id128.xml \
@@ -2488,6 +2545,7 @@ EXTRA_DIST += \
 	man/sd_id128_to_string.xml \
 	man/sd_is_fifo.xml \
 	man/sd_journal_add_match.xml \
+	man/sd_journal_enumerate_fields.xml \
 	man/sd_journal_get_catalog.xml \
 	man/sd_journal_get_cursor.xml \
 	man/sd_journal_get_cutoff_realtime_usec.xml \
@@ -2495,6 +2553,7 @@ EXTRA_DIST += \
 	man/sd_journal_get_fd.xml \
 	man/sd_journal_get_realtime_usec.xml \
 	man/sd_journal_get_usage.xml \
+	man/sd_journal_has_runtime_files.xml \
 	man/sd_journal_next.xml \
 	man/sd_journal_open.xml \
 	man/sd_journal_print.xml \
@@ -2564,6 +2623,7 @@ EXTRA_DIST += \
 	man/systemd-quotacheck.service.xml \
 	man/systemd-random-seed.service.xml \
 	man/systemd-remount-fs.service.xml \
+	man/systemd-resolve.xml \
 	man/systemd-resolved.service.xml \
 	man/systemd-rfkill.service.xml \
 	man/systemd-run.xml \

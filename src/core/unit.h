@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -121,6 +119,10 @@ struct Unit {
         dual_timestamp condition_timestamp;
         dual_timestamp assert_timestamp;
 
+        /* Updated whenever the low-level state changes */
+        dual_timestamp state_change_timestamp;
+
+        /* Updated whenever the (high-level) active state enters or leaves the active or inactive states */
         dual_timestamp inactive_exit_timestamp;
         dual_timestamp active_enter_timestamp;
         dual_timestamp active_exit_timestamp;
@@ -162,6 +164,11 @@ struct Unit {
 
         /* Error code when we didn't manage to load the unit (negative) */
         int load_error;
+
+        /* Put a ratelimit on unit starting */
+        RateLimit start_limit;
+        FailureAction start_limit_action;
+        char *reboot_arg;
 
         /* Make sure we never enter endless loops with the check unneeded logic, or the BindsTo= logic */
         RateLimit auto_stop_ratelimit;
@@ -225,6 +232,8 @@ struct Unit {
         bool cgroup_realized:1;
         bool cgroup_members_mask_valid:1;
         bool cgroup_subtree_mask_valid:1;
+
+        bool start_limit_hit:1;
 
         /* Did we already invoke unit_coldplug() for this unit? */
         bool coldplugged:1;
@@ -375,7 +384,8 @@ struct UnitVTable {
         /* Called whenever CLOCK_REALTIME made a jump */
         void (*time_change)(Unit *u);
 
-        int (*get_timeout)(Unit *u, uint64_t *timeout);
+        /* Returns the next timeout of a unit */
+        int (*get_timeout)(Unit *u, usec_t *timeout);
 
         /* This is called for each unit type and should be used to
          * enumerate existing devices and load them. However,

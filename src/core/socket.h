@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -54,7 +52,7 @@ typedef enum SocketResult {
         SOCKET_FAILURE_EXIT_CODE,
         SOCKET_FAILURE_SIGNAL,
         SOCKET_FAILURE_CORE_DUMP,
-        SOCKET_FAILURE_SERVICE_FAILED_PERMANENT,
+        SOCKET_FAILURE_SERVICE_START_LIMIT_HIT,
         _SOCKET_RESULT_MAX,
         _SOCKET_RESULT_INVALID = -1
 } SocketResult;

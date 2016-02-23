@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 /***
   This file is part of systemd.
 
@@ -83,9 +81,6 @@ typedef struct DHCPRequest {
         be32_t requested_ip;
         uint32_t lifetime;
 } DHCPRequest;
-
-DEFINE_TRIVIAL_CLEANUP_FUNC(sd_dhcp_server*, sd_dhcp_server_unref);
-#define _cleanup_dhcp_server_unref_ _cleanup_(sd_dhcp_server_unrefp)
 
 #define log_dhcp_server(client, fmt, ...) log_internal(LOG_DEBUG, 0, __FILE__, __LINE__, __func__, "DHCP SERVER: " fmt, ##__VA_ARGS__)
 

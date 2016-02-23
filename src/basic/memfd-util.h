@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,6 +20,8 @@
 ***/
 
 #include <inttypes.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 int memfd_new(const char *name);

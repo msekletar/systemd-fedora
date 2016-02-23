@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #ifndef foosdndiscfoo
 #define foosdndiscfoo
 
@@ -78,6 +76,8 @@ int sd_ndisc_router_discovery_start(sd_ndisc *nd);
         be16toh((address).s6_addr16[5]),        \
         be16toh((address).s6_addr16[6]),        \
         be16toh((address).s6_addr16[7])
+
+_SD_DEFINE_POINTER_CLEANUP_FUNC(sd_ndisc, sd_ndisc_unref);
 
 _SD_END_DECLARATIONS;
 

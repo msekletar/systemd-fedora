@@ -76,8 +76,7 @@ EOF
         cat >>$initdir/etc/fstab <<EOF
 /dev/mapper/varcrypt    /var    ext3    defaults 0 1
 EOF
-    )
-    setup_nspawn_root
+    ) || return 1
 
     ddebug "umount $TESTDIR/root/var"
     umount $TESTDIR/root/var

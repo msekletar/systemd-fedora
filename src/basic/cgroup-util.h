@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,10 +20,14 @@
 ***/
 
 #include <dirent.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
 
 #include "def.h"
+#include "hashmap.h"
+#include "macro.h"
 #include "set.h"
 
 /* An enum of well known cgroup controllers */
@@ -36,7 +38,6 @@ typedef enum CGroupController {
         CGROUP_CONTROLLER_MEMORY,
         CGROUP_CONTROLLER_DEVICES,
         CGROUP_CONTROLLER_PIDS,
-        CGROUP_CONTROLLER_NET_CLS,
         _CGROUP_CONTROLLER_MAX,
         _CGROUP_CONTROLLER_INVALID = -1,
 } CGroupController;
@@ -51,7 +52,6 @@ typedef enum CGroupMask {
         CGROUP_MASK_MEMORY = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_MEMORY),
         CGROUP_MASK_DEVICES = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_DEVICES),
         CGROUP_MASK_PIDS = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_PIDS),
-        CGROUP_MASK_NET_CLS = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_NET_CLS),
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
 

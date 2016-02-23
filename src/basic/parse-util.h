@@ -1,5 +1,3 @@
-/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
-
 #pragma once
 
 /***
@@ -22,6 +20,9 @@
 ***/
 
 #include <inttypes.h>
+#include <limits.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 #include "macro.h"
